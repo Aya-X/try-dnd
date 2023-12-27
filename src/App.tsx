@@ -8,6 +8,7 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 
 import rawData from './assets/data/data.json';
+import DragAndDropList from './DragAndDropList';
 
 const GridItem = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -78,6 +79,8 @@ function App(): JSX.Element {
       <CssBaseline />
 
       <Container maxWidth="xl">
+        <DragAndDropList />
+
         <Box sx={{ bgcolor: '#cfe8fc', height: '100vh' }}>
           <h1>Vite + React</h1>
 
