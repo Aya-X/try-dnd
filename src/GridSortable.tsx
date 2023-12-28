@@ -10,6 +10,12 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
+import ClearIcon from '@mui/icons-material/Clear';
+
+const hoverEffectStyles = {
+  transition: 'transform .3s linear',
+  '&:hover': { transform: 'scale(1.2)' },
+};
 
 const GridAddItem = () => {
   return (
@@ -21,7 +27,7 @@ const GridAddItem = () => {
   );
 };
 
-const GridItem = ({ item }) => {
+const GridItem = ({ item, index, handleDelete }) => {
   const theme = useTheme();
 
   const cardStyles = {
@@ -37,10 +43,44 @@ const GridItem = ({ item }) => {
   return (
     <>
       <Card sx={cardStyles}>
-        <CardActions sx={{ p: 0 }}>
-          <IconButton className="dragHandle" aria-label="drag" size="medium">
+        <CardActions
+          sx={{ p: 0, display: 'flex', justifyContent: 'space-between' }}
+        >
+          <IconButton
+            className="dragHandle"
+            aria-label="drag"
+            size="medium"
+            // sx={hoverEffectStyles}
+          >
             <Tooltip title="拖曳" placement="top">
-              <DragHandleIcon />
+              <DragHandleIcon
+                sx={{
+                  ...hoverEffectStyles,
+                  cursor: 'grab',
+
+                  '&:hover': {
+                    ...hoverEffectStyles['&:hover'],
+                    color: theme.palette.primary.main,
+                  },
+                }}
+              />
+            </Tooltip>
+          </IconButton>
+
+          <IconButton aria-label="delete" size="small">
+            <Tooltip title="刪除" placement="top">
+              <ClearIcon
+                onClick={() => handleDelete(index)}
+                color="disabled"
+                sx={{
+                  ...hoverEffectStyles,
+
+                  '&:hover': {
+                    ...hoverEffectStyles['&:hover'],
+                    color: theme.palette.error.main,
+                  },
+                }}
+              />
             </Tooltip>
           </IconButton>
         </CardActions>
@@ -56,7 +96,7 @@ const GridItem = ({ item }) => {
           >
             {item?.stockId ? item?.stockName : item?.stockSeq + 1}
           </Typography>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary">
+          <Typography sx={{ fontSize: 14 }}>
             {/* {item?.price} */}
             {item?.stockId
               ? new Intl.NumberFormat('zh-TW', {
@@ -76,21 +116,16 @@ const GridItem = ({ item }) => {
 const GridSortable = () => {
   const [list, setList] = useState([]);
   const [draftList, setDraftList] = useState([]);
-  const localStorageKey = 'gridSortableData';
 
   useEffect(() => {
-    const storedData = localStorage.getItem(localStorageKey);
-
-    if (storedData) {
-      setList(JSON.parse(storedData));
-    } else {
-      fetch('/src/assets/data/data.json')
-        .then((res) => res.json())
-        .then((data) => {
-          setList(data.map((item) => ({ ...item })));
-          localStorage.setItem(localStorageKey, JSON.stringify(data));
-        });
-    }
+    fetch('/src/assets/data/data.json')
+      .then((res) => res.json())
+      .then((data) => {
+        setList(data);
+      })
+      .catch((fetchError) => {
+        console.error('Error fetching data:', fetchError);
+      });
   }, []);
 
   useEffect(() => {
@@ -102,33 +137,18 @@ const GridSortable = () => {
     setList(draftList);
   }, [draftList]);
 
-  // Drag and Drop Handler
-  const handleDragDropEnds = (oldIndex, newIndex) => {
-    console.log('Drag and drop other tasks');
-    console.log(oldIndex, newIndex);
-    // list[0].stockList[oldIndex].stockSeq = newIndex;
-    // list[0].stockList[newIndex].stockSeq = oldIndex;
-    // console.log('updatedList:::', list[0]);
-    const updatedList = list[0]?.stockList.map((item, index) => ({
-      ...item,
-      stockSeq: index,
-    }));
-    console.log('updatedList:::', updatedList);
-
-    // setDraftList((prevList) => {
-    //   const newListCopy = [...prevList];
-    //   newListCopy[0].stockList = updatedList;
-    //   return newListCopy;
-    // });
-    setDraftList([{ ...list[0], stockList: updatedList }]);
-  };
-
   const handleSetList = (newList) => {
     const updatedList = newList.map((item, index) => ({
       ...item,
       stockSeq: index,
     }));
 
+    setList([{ ...list[0], stockList: updatedList }]);
+  };
+
+  const handleDelete = (index) => {
+    const updatedList = [...list[0].stockList];
+    updatedList.splice(index, 1);
     setList([{ ...list[0], stockList: updatedList }]);
   };
 
@@ -187,7 +207,12 @@ const GridSortable = () => {
           // }
         >
           {list?.[0]?.stockList.map((item, index) => (
-            <GridItem key={item.stockSeq} item={item} />
+            <GridItem
+              key={item.stockSeq}
+              item={item}
+              index={index}
+              handleDelete={handleDelete}
+            />
           ))}
           {/* {list?.[0].stockList.map((item, index) => (
             <GridItem key={item.stockId} item={item} />
