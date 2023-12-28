@@ -1,5 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { ReactSortable } from 'react-sortablejs';
+
+interface ItemType {
+  id: number;
+  name: string;
+}
 
 import { styled } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -26,18 +32,6 @@ const GridItem = styled(Paper)(({ theme }) => ({
   border: '1px solid #ccc',
   borderRadius: '0',
 }));
-
-function FormRow(props) {
-  const { item } = props;
-
-  return (
-    <>
-      <Grid item xs={2} sm={3} md={4} sx={{ height: '20%' }}>
-        <GridItem>{item?.stockName ? item?.stockId : '-'}</GridItem>
-      </Grid>
-    </>
-  );
-}
 
 const DragItem = ({ item, provided, snapshot }) => {
   return (
@@ -258,6 +252,21 @@ function NestedGrid() {
   );
 }
 
+const BasicFunction: FC = (props) => {
+  const [state, setState] = useState<ItemType[]>([
+    { id: 1, name: 'shrek' },
+    { id: 2, name: 'fiona' },
+  ]);
+
+  return (
+    <ReactSortable list={state} setList={setState}>
+      {state.map((item) => (
+        <div key={item.id}>{item.name}</div>
+      ))}
+    </ReactSortable>
+  );
+};
+
 function App(): JSX.Element {
   const [count, setCount] = useState<number>(0);
 
@@ -267,6 +276,7 @@ function App(): JSX.Element {
 
       <Container maxWidth="xl">
         {/* <DragAndDropList /> */}
+        <BasicFunction />
 
         <Box sx={{ bgcolor: '#cfe8fc', height: '100vh' }}>
           <h1>Vite + React</h1>

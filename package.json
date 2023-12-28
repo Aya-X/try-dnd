@@ -16,9 +16,12 @@
     "@mui/icons-material": "^5.15.2",
     "@mui/material": "^5.15.2",
     "@types/react-beautiful-dnd": "^13.1.7",
+    "@types/sortablejs": "^1.15.7",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-sortablejs": "^6.1.4",
+    "sortablejs": "^1.15.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
