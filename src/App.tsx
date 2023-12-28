@@ -1,6 +1,7 @@
 import { useState, useEffect, FC } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { ReactSortable } from 'react-sortablejs';
+import GridSortable from './GridSortable';
 
 interface ItemType {
   id: number;
@@ -276,6 +277,7 @@ function App(): JSX.Element {
 
       <Container maxWidth="xl">
         {/* <DragAndDropList /> */}
+        <GridSortable />
         <BasicFunction />
 
         <Box sx={{ bgcolor: '#cfe8fc', height: '100vh' }}>
