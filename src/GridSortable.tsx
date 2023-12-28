@@ -26,6 +26,7 @@ const GridAddItem = () => {
     </div>
   );
 };
+// edf of GridAddItem
 
 const GridItem = ({ item, index, handleDelete }) => {
   const theme = useTheme();
@@ -97,7 +98,6 @@ const GridItem = ({ item, index, handleDelete }) => {
             {item?.stockId ? item?.stockName : item?.stockSeq + 1}
           </Typography>
           <Typography sx={{ fontSize: 14 }}>
-            {/* {item?.price} */}
             {item?.stockId
               ? new Intl.NumberFormat('zh-TW', {
                   style: 'currency',
@@ -112,10 +112,10 @@ const GridItem = ({ item, index, handleDelete }) => {
     </>
   );
 };
+// end of GridItem
 
 const GridSortable = () => {
   const [list, setList] = useState([]);
-  const [draftList, setDraftList] = useState([]);
 
   useEffect(() => {
     fetch('/src/assets/data/data.json')
@@ -131,11 +131,6 @@ const GridSortable = () => {
   useEffect(() => {
     console.log('list updated:', list);
   }, [list]);
-
-  useEffect(() => {
-    console.log('draftList updated:', draftList);
-    setList(draftList);
-  }, [draftList]);
 
   const handleSetList = (newList) => {
     const updatedList = newList.map((item, index) => ({
@@ -193,8 +188,6 @@ const GridSortable = () => {
         <ReactSortable
           list={list[0].stockList}
           setList={(newList) => {
-            // setList([{ ...list[0], stockList: newList }]);
-            // console.log('newList:::', newList);
             handleSetList(newList);
           }}
           className="grid-container"
@@ -214,9 +207,6 @@ const GridSortable = () => {
               handleDelete={handleDelete}
             />
           ))}
-          {/* {list?.[0].stockList.map((item, index) => (
-            <GridItem key={item.stockId} item={item} />
-          ))} */}
         </ReactSortable>
       )}
     </Box>
