@@ -228,71 +228,81 @@ const GridSortable = () => {
   };
 
   return (
-    <Box
-      sx={{
-        height: '100vh',
-        p: 8,
+    <>
+      <Box
+        sx={{
+          height: '100vh',
+          p: 8,
 
-        border: '1px solid #ccc',
-        bgcolor: '#ccc',
-        shadow:
-          '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
+          border: '1px solid #ccc',
+          bgcolor: '#ccc',
+          shadow:
+            '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
+        }}
+      >
+        <Box
+          sx={{
+            '& .grid-container': {
+              display: 'grid',
+              gap: '0',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gridTemplateRows: '100%',
+              overflowY: 'hidden',
+            },
 
-        '& .grid-container': {
-          display: 'grid',
-          gap: '0',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gridTemplateRows: '100%',
-          overflowY: 'hidden',
-        },
+            '& .dropArea': {
+              position: 'relative',
 
-        '& .dropArea': {
-          position: 'relative',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
 
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-
-            backgroundColor: '#ebebeb',
-            zIndex: 1,
-          },
-        },
-      }}
-    >
-      {list.length === 0 ? (
-        <GridAddItem />
-      ) : (
-        <ReactSortable
-          list={list[0].stockList}
-          setList={(newList) => {
-            handleSetList(newList);
+                backgroundColor: '#ebebeb',
+                zIndex: 1,
+              },
+            },
           }}
-          className="grid-container"
-          ghostClass="dropArea"
-          handle=".dragHandle"
-          filter=".ignoreDrag"
-          preventOnFilter={true}
-          // onEnd={({ oldIndex, newIndex }) =>
-          //   handleDragDropEnds(oldIndex, newIndex)
-          // }
         >
-          {list?.[0]?.stockList.map((item, index) => (
-            <GridItem
-              key={item.stockSeq}
-              item={item}
-              index={index}
-              handleDelete={handleDelete}
-              handleSaveStockName={(index, newName) => {
-                console.log('GridItem handleSaveStockName:', index, newName);
-                handleSaveStockName(index, newName);
+          {list.length === 0 ? (
+            <GridAddItem />
+          ) : (
+            <ReactSortable
+              list={list[0].stockList}
+              setList={(newList) => {
+                handleSetList(newList);
               }}
-            />
-          ))}
-        </ReactSortable>
-      )}
-    </Box>
+              className="grid-container"
+              ghostClass="dropArea"
+              handle=".dragHandle"
+              filter=".ignoreDrag"
+              preventOnFilter={true}
+              // onEnd={({ oldIndex, newIndex }) =>
+              //   handleDragDropEnds(oldIndex, newIndex)
+              // }
+            >
+              {list?.[0]?.stockList.map((item, index) => (
+                <GridItem
+                  key={item.stockSeq}
+                  item={item}
+                  index={index}
+                  handleDelete={handleDelete}
+                  handleSaveStockName={(index, newName) => {
+                    console.log(
+                      'GridItem handleSaveStockName:',
+                      index,
+                      newName,
+                    );
+                    handleSaveStockName(index, newName);
+                  }}
+                />
+              ))}
+            </ReactSortable>
+          )}
+        </Box>
+      </Box>
+    </>
   );
 };
 
