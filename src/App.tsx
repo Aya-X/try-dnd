@@ -2,7 +2,7 @@ import { useState, useEffect, FC } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { ReactSortable } from 'react-sortablejs';
 import GridSortable from './GridSortable';
-import BasicTabs from './BasicTabs';
+import GridTabs from './GridTabs';
 
 interface ItemType {
   id: number;
@@ -17,7 +17,6 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 
 import rawData from './assets/data/data.json';
-import DragAndDropList from './DragAndDropList';
 
 const GridItem = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -278,8 +277,8 @@ function App(): JSX.Element {
 
       <Container maxWidth="xl">
         {/* <DragAndDropList /> */}
-        <BasicTabs />
-        <GridSortable />
+        <GridTabs />
+        {/* <GridSortable /> */}
 
         <BasicFunction />
 

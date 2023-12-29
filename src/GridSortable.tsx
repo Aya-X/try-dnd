@@ -188,23 +188,9 @@ const GridItem = ({ item, index, handleDelete, handleSaveStockName }) => {
 };
 // end of GridItem
 
-const GridSortable = () => {
-  const [list, setList] = useState([]);
-
-  useEffect(() => {
-    fetch('/src/assets/data/data.json')
-      .then((res) => res.json())
-      .then((data) => {
-        setList(data);
-      })
-      .catch((fetchError) => {
-        console.error('Error fetching data:', fetchError);
-      });
-  }, []);
-
-  useEffect(() => {
-    console.log('list updated:', list);
-  }, [list]);
+const GridSortable = (props) => {
+  const { dataList } = props;
+  const [list, setList] = useState(() => dataList);
 
   const handleSetList = (newList) => {
     const updatedList = newList.map((item, index) => ({
