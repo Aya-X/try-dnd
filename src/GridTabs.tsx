@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 import GridSortable from './GridSortable';
@@ -17,7 +16,7 @@ function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
 
   return (
-    <div
+    <Box
       role="tabpanel"
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
@@ -26,10 +25,10 @@ function TabPanel(props: TabPanelProps) {
     >
       {value === index && (
         <Box>
-          <Typography>{children}</Typography>
+          <>{children}</>
         </Box>
       )}
-    </div>
+    </Box>
   );
 }
 // end of TabPanel
@@ -89,12 +88,17 @@ export default function GridTabs() {
           ))}
         </Tabs>
       </Box>
+
       {dataList.length > 0 &&
         dataList.map((data, index) => (
           <TabPanel key={index} value={value} index={index}>
             {data?.categorySeq}
             {data?.categoryName}
-            <GridSortable dataList={dataList} />
+            <GridSortable
+              dataList={dataList}
+              categoryIndex={index}
+              stockList={data?.stockList}
+            />
           </TabPanel>
         ))}
     </Box>

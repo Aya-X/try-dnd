@@ -53,6 +53,7 @@ const RenderStockName = (props) => {
           // defaultValue={stockName}
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
+          // #TODO: Refactor if leave this card
           onMouseLeave={() => setIsEditing(false)}
           onKeyDownCapture={(e) => {
             if (e.key === 'Enter') {
@@ -91,8 +92,8 @@ const GridItem = ({ item, index, handleDelete, handleSaveStockName }) => {
   const cardStyles = {
     display: 'flex',
     flexDirection: 'column',
-    height: '100%',
-    // aspectRatio: '1 / 1',
+    // height: '100%',
+    aspectRatio: '1 / 1',
     border: '1px solid #ccc',
     borderRadius: 0,
     bgcolor: item?.backgroundColor,
@@ -147,7 +148,7 @@ const GridItem = ({ item, index, handleDelete, handleSaveStockName }) => {
         <CardContent
           sx={{
             flexGrow: 1,
-            // pt: '20%',
+            pt: '24%',
             textAlign: 'center',
           }}
         >
@@ -189,29 +190,120 @@ const GridItem = ({ item, index, handleDelete, handleSaveStockName }) => {
 // end of GridItem
 
 const GridSortable = (props) => {
-  const { dataList } = props;
+  const { dataList, categoryIndex, stockList } = props;
   const [list, setList] = useState(() => dataList);
+  const [gridList, setGridList] = useState([]);
+
+  useEffect(() => {
+    if (list && categoryIndex < list.length && categoryIndex >= 0) {
+      setGridList([...(list[categoryIndex]?.stockList || [])]); // 使用展開運算符並確保 stockList 存在
+    }
+  }, [list, categoryIndex]);
 
   const handleSetList = (newList) => {
-    const updatedList = newList.map((item, index) => ({
-      ...item,
-      stockSeq: index,
-    }));
+    setList((prevList) => {
+      // 在原有基礎上更新特定類別的 stockList
+      const updatedList = prevList.map((item, index) =>
+        index === categoryIndex ? { ...item, stockList: newList } : item,
+      );
 
-    setList([{ ...list[0], stockList: updatedList }]);
+      console.log(
+        'Updating list from:',
+        prevList.length,
+        'to:',
+        updatedList.length,
+      );
+      return updatedList;
+    });
   };
 
-  const handleDelete = (index) => {
-    const updatedList = [...list[0].stockList];
-    updatedList.splice(index, 1);
-    setList([{ ...list[0], stockList: updatedList }]);
+  const handleDelete = (deleteIndex) => {
+    setList((prevList) => {
+      const updatedStockList = [...prevList[categoryIndex].stockList];
+
+      // 保留 posStockGridCategoryId 和 stockSeq，其他設為空
+      const originalItem = updatedStockList[deleteIndex];
+
+      updatedStockList[deleteIndex] = {
+        // 保留原始資料
+        posStockGridCategoryId: originalItem.posStockGridCategoryId,
+        stockSeq: originalItem.stockSeq,
+
+        stockId: '',
+        stockMaster: {
+          stockId: '',
+          internationalBarcode: '',
+          stockBrandId: '',
+          categoryId: '',
+          description: '',
+          longDescription: '',
+          useUnits: '',
+          mbflag: '',
+          stockMbflag: null,
+          taxCatId: 0,
+          stockTradeTypeId: 0,
+          saleStartDate: null,
+          saleStopDate: null,
+          inventoryAccount: '',
+          incomeAccount: '',
+          price: null,
+          bloodTestMaxValue: null,
+          bloodTestMinValue: null,
+        },
+        stockName: '',
+        price: 0,
+        backgroundColor: '#fcfcfc',
+        undiscountable: null,
+      };
+
+      const updatedList = prevList.map((item, index) =>
+        index === categoryIndex
+          ? { ...item, stockList: updatedStockList }
+          : item,
+      );
+
+      return updatedList;
+    });
   };
 
-  const handleSaveStockName = (index, newName) => {
-    const updatedList = [...list[0].stockList];
-    updatedList[index] = { ...updatedList[index], stockName: newName };
-    setList([{ ...list[0], stockList: updatedList }]);
+  const handleSaveStockName = (saveIndex, newName) => {
+    setList((prevList) => {
+      // 複製當前類別的 stockList 並更新指定項目的 stockName
+      const updatedStockList = prevList[categoryIndex].stockList.map(
+        (item, index) =>
+          index === saveIndex ? { ...item, stockName: newName } : item,
+      );
+
+      // 更新當前類別的 stockList 並保留其他
+      const updatedList = prevList.map((item, index) =>
+        index === categoryIndex
+          ? { ...item, stockList: updatedStockList }
+          : item,
+      );
+
+      return updatedList;
+    });
   };
+
+  useEffect(() => {
+    console.log('list:', list);
+    console.log('categoryIndex:', categoryIndex);
+    if (categoryIndex >= list.length) {
+      console.warn('categoryIndex is out of bounds.');
+    }
+  }, [list, categoryIndex]);
+
+  useEffect(() => {
+    // 確保 categoryIndex 在 list 範圍內
+    if (categoryIndex >= 0 && categoryIndex < list.length) {
+      // 這裡可以放置依賴於 list[categoryIndex] 的進一步邏輯
+      console.log('Current category:::', list[categoryIndex]);
+    } else {
+      console.warn('categoryIndex out of bounds:', categoryIndex);
+    }
+
+    console.log('list.length:::', list.length);
+  }, [categoryIndex, list]);
 
   return (
     <>
@@ -255,7 +347,8 @@ const GridSortable = (props) => {
             <GridAddItem />
           ) : (
             <ReactSortable
-              list={list[0].stockList}
+              // list={gridList}
+              list={list[categoryIndex]?.stockList}
               setList={(newList) => {
                 handleSetList(newList);
               }}
@@ -268,7 +361,7 @@ const GridSortable = (props) => {
               //   handleDragDropEnds(oldIndex, newIndex)
               // }
             >
-              {list?.[0]?.stockList.map((item, index) => (
+              {list?.[categoryIndex]?.stockList.map((item, index) => (
                 <GridItem
                   key={item.stockSeq}
                   item={item}
