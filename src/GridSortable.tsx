@@ -192,13 +192,6 @@ const GridItem = ({ item, index, handleDelete, handleSaveStockName }) => {
 const GridSortable = (props) => {
   const { dataList, categoryIndex, stockList } = props;
   const [list, setList] = useState(() => dataList);
-  const [gridList, setGridList] = useState([]);
-
-  useEffect(() => {
-    if (list && categoryIndex < list.length && categoryIndex >= 0) {
-      setGridList([...(list[categoryIndex]?.stockList || [])]); // 使用展開運算符並確保 stockList 存在
-    }
-  }, [list, categoryIndex]);
 
   const handleSetList = (newList) => {
     setList((prevList) => {
@@ -288,6 +281,7 @@ const GridSortable = (props) => {
   useEffect(() => {
     console.log('list:', list);
     console.log('categoryIndex:', categoryIndex);
+
     if (categoryIndex >= list.length) {
       console.warn('categoryIndex is out of bounds.');
     }
@@ -347,7 +341,6 @@ const GridSortable = (props) => {
             <GridAddItem />
           ) : (
             <ReactSortable
-              // list={gridList}
               list={list[categoryIndex]?.stockList}
               setList={(newList) => {
                 handleSetList(newList);

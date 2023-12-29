@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+import { styled } from '@mui/material/styles';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -11,6 +12,30 @@ interface TabPanelProps {
   index: number;
   value: number;
 }
+
+const StyledTab = styled(Tab)({
+  marginRight: '1px',
+
+  backgroundColor: '#ccc',
+  borderRadius: '12px 12px 0 0',
+
+  '&:hover': {
+    color: '#40a9ff',
+    opacity: 1,
+  },
+
+  '&.Mui-selected': {
+    color: 'grey',
+    backgroundColor: '#fff',
+  },
+  '&.Mui-focusVisible': {
+    backgroundColor: 'gold',
+  },
+
+  // '&.MuiTab-root.Mui-selected': {
+  //   color: 'gold',
+  // },
+});
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -64,36 +89,36 @@ export default function GridTabs() {
     setValue(newValue);
   };
 
-  const tabsData = [
-    { label: 'Item One', content: 'Item One Content' },
-    { label: 'Item Two', content: 'Item Two Content' },
-    { label: 'Item Three', content: 'Item Three Content' },
-  ];
-
   return (
     <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="grid tabs">
+      <Box>
+        <Tabs
+          TabIndicatorProps={{ sx: { display: 'none' } }}
+          sx={{
+            '& .MuiTabs-flexContainer': {
+              flexWrap: 'wrap',
+            },
+          }}
+          // variant="scrollable"
+          // scrollButtons={true}
+          value={value}
+          onChange={handleChange}
+          aria-label="grid tabs"
+        >
           {dataList.length > 0 &&
             dataList.map((data, index) => (
-              <Tab
+              <StyledTab
                 key={index}
                 label={`${data?.categorySeq}-${data?.categoryName}`}
                 {...a11yProps(index)}
               />
             ))}
-
-          {tabsData.map((tab, index) => (
-            <Tab key={index} label={tab.label} {...a11yProps(index)} />
-          ))}
         </Tabs>
       </Box>
 
       {dataList.length > 0 &&
         dataList.map((data, index) => (
           <TabPanel key={index} value={value} index={index}>
-            {data?.categorySeq}
-            {data?.categoryName}
             <GridSortable
               dataList={dataList}
               categoryIndex={index}
