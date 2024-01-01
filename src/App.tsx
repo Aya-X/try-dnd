@@ -1,37 +1,90 @@
 import { useState } from 'react';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-import reactLogo from './assets/react.svg';
-import './App.css';
+
+const getItems = (count) =>
+  Array.from({ length: count }, (v, k) => k).map((k) => ({
+    id: `item-${k}`,
+    content: `item ${k}`,
+  }));
+
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+  return result;
+};
+
+const grid = 8;
+
+const getItemStyle = (isDragging, draggableStyle) => ({
+  // width: '33%',
+  userSelect: 'none',
+  padding: grid * 2,
+  margin: `0 ${grid}px 0 0`,
+  background: isDragging ? 'lightgreen' : 'grey',
+  ...draggableStyle,
+});
+
+const getListStyle = (isDraggingOver) => ({
+  background: isDraggingOver ? 'lightblue' : 'lightgrey',
+  display: 'flex',
+  // display: 'grid',
+  // gridTemplateColumns: 'repeat(3, 1fr)',
+
+  padding: grid,
+  overflow: 'hidden',
+});
 
 function App(): JSX.Element {
-  const [count, setCount] = useState<number>(0);
+  const [items, setItems] = useState(() => getItems(15));
+
+  const onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+    const newItems = reorder(
+      items,
+      result.source.index,
+      result.destination.index,
+    );
+    setItems(newItems);
+  };
 
   return (
     <>
-      <div>
-        <a href="https://react.dev" rel="noopener noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
+      {/*  */}
 
-      <h1>Vite + React</h1>
-
-      <div className="card">
-        <button
-          type="button"
-          onClick={() => setCount((prevCount) => prevCount + 1)}
-        >
-          <span>count is </span>
-          {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="droppable" direction="horizontal">
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              style={getListStyle(snapshot.isDraggingOver)}
+              {...provided.droppableProps}
+            >
+              {items.map((item, index) => (
+                <Draggable key={item.id} draggableId={item.id} index={index}>
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      style={getItemStyle(
+                        snapshot.isDragging,
+                        provided.draggableProps.style,
+                      )}
+                    >
+                      {item.content}
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </>
   );
 }
